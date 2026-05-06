@@ -45,17 +45,54 @@ using min_priority_queue = std::priority_queue<T, std::vector<T>, std::greater<T
 
 // map of node id to pair of cost and parent node id (for path reconstruction)
 std::unordered_map<IDType, std::pair<float, IDType>> Dijkstra(WeightedGraph const& graph, IDType const start, IDType const end) {
+    // TABLEAU ASSOCIATIF DISTANCE NOEUD associe float(distance) avec idtype(parents)
     std::unordered_map<IDType, std::pair<float, IDType>> distances {};
     // priority queue of pair of current cost from starting node and current node id
     // this will sort node base on the cost (as pair are ordered with lexicographical order)
+    //TAB DES NOEUDS A VISITER float (poids actuel), idtype(le noeud)
+    //file de priorité
     min_priority_queue<std::pair<float, IDType>> to_visit {};
 
-    to_visit.push({0.0f, start});
+    to_visit.push({0.0f, start}); //on met le premier noeud dans les à visiter
 
-    /* TODO */
-    
-    return distances;
-}
+    /* TODO  Q1*/ 
+    //ATTENTION LES POIDS COMPARE SONT PAS LES BONSD
+    while (!to_visit.empty()) //tant que à visiter pas vide
+        {
+            //prend plus petite distance ie le haut de la file
+            auto [cost, current_node]= to_visit.top();
+             //on retire noeud courant de à visiter
+            to_visit.pop();
+            if (current_node =! end){ //condition fin 
+           
+                    //ajout voisins, utilise get_neighboor
+                for (auto const& voisin : graph.get_neighbors(current_node)) {
+                    auto node_voisin = voisin.to;
+                    float weight_voisin = voisin.weight;
+                    //ajout
+                    to_visit.push({weight_voisin,node_voisin});
+
+                    //on met dans distance noeud parcouru et son parent
+                    distances[node_voisin]={weight_voisin,current_node};
+
+                    //calcul distance du noeud en passant pas current
+                    float new_cost = weight_voisin + cost;
+
+                    //on maj distance si necessaire
+                    if(weight_voisin>new_cost){
+                        weight_voisin=new_cost;
+
+                        //maj dans distance
+                        distances[node_voisin]={weight_voisin,current_node};
+
+                        //on remet le neoud dans à visister
+                        to_visit.push({node_voisin,weight_voisin});
+                    }
+                }
+            }
+        
+        return distances;
+    }
 
 std::vector<IDType> reconstruct_path(std::unordered_map<IDType, std::pair<float, IDType>> const& distances, IDType const start, IDType const end) {
     std::vector<IDType> path { };
