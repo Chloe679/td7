@@ -63,15 +63,14 @@ std::unordered_map<IDType, std::pair<float, IDType>> Dijkstra(WeightedGraph cons
             auto [cost, current_node]= to_visit.top();
              //on retire noeud courant de à visiter
             to_visit.pop();
-            if (current_node =! end){ //condition fin 
+            if (current_node != end){ //condition fin 
            
                     //ajout voisins, utilise get_neighboor
                 for (auto const& voisin : graph.get_neighbors(current_node)) {
                     auto node_voisin = voisin.to;
                     float weight_voisin = voisin.weight;
-                    //ajout
+                    //ajout CHANGER VALEUR
                     to_visit.push({weight_voisin,node_voisin});
-
                     //on met dans distance noeud parcouru et son parent
                     distances[node_voisin]={weight_voisin,current_node};
 
@@ -79,14 +78,15 @@ std::unordered_map<IDType, std::pair<float, IDType>> Dijkstra(WeightedGraph cons
                     float new_cost = weight_voisin + cost;
 
                     //on maj distance si necessaire
-                    if(weight_voisin>new_cost){
-                        weight_voisin=new_cost;
+                    if(distances[node_voisin].first>new_cost){ //poids enrigistré VS nouveau
+                        distances[node_voisin].first=new_cost;
 
                         //maj dans distance
                         distances[node_voisin]={weight_voisin,current_node};
 
-                        //on remet le neoud dans à visister
-                        to_visit.push({node_voisin,weight_voisin});
+                        //on remet le noeud dans à visister
+                        //PAS SUR
+                        to_visit.push({new_cost,node_voisin});
                     }
                 }
             }
