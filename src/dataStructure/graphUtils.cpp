@@ -54,6 +54,7 @@ std::unordered_map<IDType, std::pair<float, IDType>> Dijkstra(WeightedGraph cons
     min_priority_queue<std::pair<float, IDType>> to_visit {};
 
     to_visit.push({0.0f, start}); //on met le premier noeud dans les à visiter
+    distances[start] = {0.0f, start}; //idem pr start
 
     /* TODO  Q1*/ 
     //ATTENTION LES POIDS COMPARE SONT PAS LES BONSD
@@ -63,33 +64,35 @@ std::unordered_map<IDType, std::pair<float, IDType>> Dijkstra(WeightedGraph cons
             auto [cost, current_node]= to_visit.top();
              //on retire noeud courant de à visiter
             to_visit.pop();
-            if (current_node != end){ //condition fin 
-           
+            if (current_node == end){
+                break;
+            } //condition fin 
+            else{
+            
                     //ajout voisins, utilise get_neighboor
                 for (auto const& voisin : graph.get_neighbors(current_node)) {
                     auto node_voisin = voisin.to;
                     float weight_voisin = voisin.weight;
-                    //ajout CHANGER VALEUR
-                    to_visit.push({weight_voisin,node_voisin});
-                    //on met dans distance noeud parcouru et son parent
-                    distances[node_voisin]={weight_voisin,current_node};
 
                     //calcul distance du noeud en passant pas current
                     float new_cost = weight_voisin + cost;
 
-                    //on maj distance si necessaire
-                    if(distances[node_voisin].first>new_cost){ //poids enrigistré VS nouveau
-                        distances[node_voisin].first=new_cost;
 
+                    
+
+                    //on maj distance si necessaire: pas visté OU meilleur cout
+                     if(!distances.contains(node_voisin) || distances[node_voisin].first>new_cost){ //poids enrigistré VS nouveau
+                
                         //maj dans distance
-                        distances[node_voisin]={weight_voisin,current_node};
+                        distances[node_voisin]={new_cost,current_node};
 
                         //on remet le noeud dans à visister
-                        //PAS SUR
                         to_visit.push({new_cost,node_voisin});
-                    }
-                }
+                        }
+                      
             }
+            }
+        }
         
         return distances;
     }
