@@ -108,13 +108,20 @@ void draw_helper_text(int screenWidth, int screenHeight) {
 
 void draw_loop(const PositionedGraph& graph) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(0, 0, "raylib window");
+    InitWindow(1280, 720, "raylib window");
 
-    int const monitor_width { GetMonitorWidth(GetCurrentMonitor()) };
-    int const monitor_height { GetMonitorHeight(GetCurrentMonitor()) };
-    SetWindowSize(monitor_width/2, monitor_height/2);
-    SetWindowPosition(monitor_width/4, monitor_height/4);
+    // Force a regular resizable window state at startup.
+    ClearWindowState(FLAG_FULLSCREEN_MODE);
+    SetWindowMinSize(800, 450);
     SetTargetFPS(30);
+
+    int const monitor { GetCurrentMonitor() };
+    int const monitor_width { GetMonitorWidth(monitor) };
+    int const monitor_height { GetMonitorHeight(monitor) };
+    if (monitor_width > 0 && monitor_height > 0) {
+        SetWindowSize(monitor_width/2, monitor_height/2);
+        SetWindowPosition(monitor_width/4, monitor_height/4);
+    }
     
     DrawingContext context {
         .camera = { {0.f, 0.f}, {0.f, 0.f}, 0.f, 1.f },
