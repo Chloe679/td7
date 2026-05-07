@@ -45,3 +45,7 @@ résultat: on cree des groupes de noeuds, on enleve certain inutile
 
 ETAPE 5
 on refait des approximation de lignes droites (étape 3 le retour)
+
+la commande :
+./td7.exe extract data/test.osm data/test_extract.graph  
+./td7.exe simplify data/test_extract.graph
