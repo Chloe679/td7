@@ -57,7 +57,7 @@ std::unordered_map<IDType, std::pair<float, IDType>> Dijkstra(WeightedGraph cons
     distances[start] = {0.0f, start}; //idem pr start
 
     /* TODO  Q1*/ 
-    //ATTENTION LES POIDS COMPARE SONT PAS LES BONSD
+    
     while (!to_visit.empty()) //tant que à visiter pas vide
         {
             //prend plus petite distance ie le haut de la file

@@ -1,51 +1,87 @@
-EX 2
+# S2 | Prog&Algo: TD07 Graphes
 
-Question 1:
-la structure WeightedGraph est définie dans WeightedGraph.hpp, et possède le numéro d'un noeud et la liste de ses aretes (struct avec desintaion et poids)
+## TD07 Graphes
 
-PositionedGraph est définie dans le fichier PositionedGraph.hpp issu du dossier osm
-Il regroupe la structure du graphe ( donné par weightedGraph)
--une association entre chaque neoud et leur position (x,y) appelée nod
+**Chloé Chabaud**
 
-Question 2 :
+# Exercice 1 (Prise en main)
 
-extraction OSM: permet de lire le fichier OSM et d'en afficher la structure du graphe
-simplification viens enlever les noeuds et les arrêtes inutiles/pas reliées
-visualition permet d'afficher graphiquement le graphe
+Commandes tapées :
 
-Question 3:
-étapes de simplification
+- `./td7.exe extract data/test.osm data/test_extract.graph` : extrait la carte dans le dossier data
+- `./td7.exe simplify data/test_extract.graph` : simplification de la carte extraite
+- `./td7.exe visualize data/test_extract.graph` : affichage de la carte simplifiée
 
-ETAPE 1: keep_only_largest_connected_component :
-on cree une liste de noeud parcouru
-une liste de noeud adjecent
-utilise un parcourt en profondeur pr relever toutes les voisins du noeuds en question
-on les ajoute dans une struct ( on a donc un ens de noeud adjacent)
-on note le noeud comme visité
-puis on refait sur des noeuds pas visité
-on obtient donc des groupes d'adjacences
-on retourne adjacences la plus grande ( le plus grand ilot)
+# Exercice 2
 
-avantages: on réduit la taille du graphe
-incovénient: on perd quand même des réseaux qui peuvent être grand (juste 1 noeud en mois que le plus grand)
+##Question 1:
 
-ETAPE 2 remove_small_ending_edge
-on parcourt tous les noeuds, on regarde son nombre de voisin, si il est <= 1 on le supprime lui et toutes ses arrètes entrante ou sortantes
-réduit encore le nbr de noeuds et dc sa taille
+La structure WeightedGraph est définie dans WeightedGraph.hpp. Elle représente le graphe sous forme de liste d’adjacence : chaque nœud possède une liste d’arêtes contenant une destination et un poids.
 
-ETAPE 3 remove_degree_two_nodes_by_angle_threshold(graph, 30);
-on parcourt tous les noeuds et on regarde tous ses voisins.
-Si il en a exactement 2, on regarde l'angle formé par ses 2 arrêtes. Si environ = 180 degres, on le supprime et on relie ses voisins ( il était inutile car ligne droite).
-Permet de supprimer des noeuds intermediraore inutile, ce qui ne ralonge pas la longueur entre le snoeuds pr autant
-mais on fait des approcimation et peut être qu'on enlève des donnée importante
-ETAPE 4: group_nodes_by_connection_depth_and_proximity
-On parcourt chaque noeud, et pour chacun, on cree un cluster : un groupe avec ses voisins les assez proches ( en arrêtes) et lui mêmes. Pour chaque voisin dans le cluster, on regarde leur distance au niveau spacial ( en ftc den leur positioon)avec le neoud en question et on ne garde que ceux assez proche (distance< proximity)
+PositionedGraph est définie dans le fichier PositionedGraph.hpp (dossier OSM). Elle regroupe la structure du graphe (via WeightedGraph) ainsi que la position des nœuds (x, y).
 
-résultat: on cree des groupes de noeuds, on enleve certain inutile
+##Question 2 :
 
-ETAPE 5
-on refait des approximation de lignes droites (étape 3 le retour)
+'Extraction OSM' : permet de lire un fichier OpenStreetMap et de construire la structure du graphe.
+'Simplification' : enlève les nœuds et arêtes inutiles ou non pertinentes.
+'Visualisation' : permet d’afficher graphiquement le graphe
 
-la commande :
-./td7.exe extract data/test.osm data/test_extract.graph  
-./td7.exe simplify data/test_extract.graph
+##Question 3: étapes de simplification
+
+## Étape 1 : `keep_only_largest_connected_component`
+
+On commence par détecter toutes les composantes connexes du graphe à l’aide d’un parcours en profondeur (DFS).
+
+Pour chaque nœud non visité, on explore tous ses voisins accessibles et on les regroupe dans une même composante ( on a donc des ensembles de noeuds adjacents).  
+On répète ce processus jusqu’à avoir exploré tout le graphe.
+
+Ensuite, on conserve uniquement la plus grande composante connexe (le plus grand “îlot”) et on supprime toutes les autres.
+
+### Avantage
+
+- Réduction importante du graphe en supprimant les parties isolées
+
+### Inconvénient
+
+- Suppression de petites composantes potentiellement utiles
+
+## Étape 2 : `remove_small_ending_edge`
+
+On parcourt tous les nœuds du graphe.  
+Si un nœud possède un seul voisin (degré 1) alors ce nœud est supprimé avec son arête.
+
+### Avantage
+
+- Suppression des petites branches en fin de graphe inutiles
+
+### Inconvénient
+
+- Certaines petites "routes" réelles peuvent être supprimées
+
+## Étape 3 : `remove_degree_two_nodes_by_angle_threshold`
+
+On parcourt tout le graphe
+Pour chaques nœuds ayant exactement deux voisins,
+on calcule l’angle formé par ses deux arêtes.
+
+Si cet angle est proche de 180° (ligne droite), le nœud est supprimé et ses deux voisins sont directement connectés.
+
+### Avantage
+
+- Simplifie en supprimant des neouds intermediaires, sans modifier la structure du graphe (lignes droites conservées)
+
+### Inconvénient
+
+- Perte de précision au niveau de la direction/géométrie dans le graphe. On fait des approximations qui peuvent supprimer des données importantes
+
+## Étape 4 : `group_nodes_by_connection_depth_and_proximity`
+
+Pour chaque noeuds, on crée des groupes (clusters) de nœuds adjacents : ce sont des nœuds proches dans le graphe (peu d’arêtes entre eux).
+Pour chaque voisin dans le cluster, on étudie leur distance spatiale (à partir de leurs positions).
+On ne conserve que les nœuds suffisamment proches (distance < seuil de proximité).
+
+Résultat : on obtient des groupes de nœuds, ce qui permet de fusionner certaines zones et de réduire le nombre de nœuds inutiles.
+
+## Étape 5 : nouvelle simplification des nœuds de degré 2
+
+Après les fusions, de nouveaux nœuds de degré 2 peuvent apparaître, on refait donc des approximation "de lignes droites" (étape 3)
