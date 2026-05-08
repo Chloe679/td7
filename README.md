@@ -18,7 +18,7 @@ Commandes tapées :
 
 La structure WeightedGraph est définie dans WeightedGraph.hpp. Elle représente le graphe sous forme de liste d’adjacence : chaque nœud possède une liste d’arêtes contenant une destination et un poids.
 
-PositionedGraph est définie dans le fichier PositionedGraph.hpp (dossier OSM). Elle regroupe la structure du graphe (via WeightedGraph) ainsi que la position des nœuds (x, y).
+PositionedGraph est définie dans le fichier PositionedGraph.hpp (dossier osm). Elle regroupe la structure du graphe (via WeightedGraph) ainsi que la position des nœuds (x, y).
 
 ##Question 2 :
 
